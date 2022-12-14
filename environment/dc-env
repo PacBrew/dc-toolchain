@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# setup pacbrew dc toolchain
+export DC_HOME=/opt/pacbrew/dc
+export DC_SYSROOT="${DC_HOME}/target/sh-elf"
+export DC_HOST="${DC_HOME}/host/sh-elf"
+export DC_CROSS_PREFIX="sh-elf-"
+
+# setup kos compatibility
+. ${DC_HOME}/environ.sh
+
+# setup PacBrew
+export AS="${KOS_AS}"
+export CC="${KOS_CC}"
+export CXX="${KOS_CCPLUS}"
+export LD="${KOS_LD}"
+export AR="${KOS_AR}"
+export NM="${DC_HOST}/bin/sh-elf-nm"
+export RANLIB="${KOS_RANLIB}"
+export STRIP="${KOS_STRIP}"
+export CFLAGS="-I${DC_SYSROOT}/usr/include ${CFLAGS} ${KOS_CFLAGS}"
+export CPPFLAGS="${CFLAGS} ${CPPFLAGS} ${KOS_CPPFLAGS}"
+export CXXFLAGS="${CFLAGS} ${CXXFLAGS} ${KOS_CPPFLAGS}"
+export LDFLAGS="-L${DC_SYSROOT}/usr/lib ${LDFLAGS} ${KOS_LDFLAGS} ${KOS_LIBS}"
+
+# pkg config setup
+export PKG_CONFIG_DIR=
+export PKG_CONFIG_SYSROOT_DIR=${DC_SYSROOT}
+export PKG_CONFIG_LIBDIR=${DC_SYSROOT}/usr/lib/pkgconfig:${DC_SYSROOT}/usr/share/pkgconfig
+export PKG_CONFIG_PATH=${PKG_CONFIG_PATH_CUSTOM}:${PKG_CONFIG_LIBDIR}
+
+# prefix setup
+export DC_PREFIX=${DC_SYSROOT}/usr
+export DC_PREFIX_BIN=${DC_PREFIX}/bin
+export DC_PREFIX_INCLUDE=${DC_PREFIX}/include
+export DC_PREFIX_LIB=${DC_PREFIX}/lib
+export DC_PREFIX_ETC=${DC_PREFIX}/etc
+export DC_PREFIX_SHARE=${DC_PREFIX}/share
+
+export PATH="${DC_HOME}:${DC_PREFIX_BIN}:${DC_HOST}/bin:$PATH"
+

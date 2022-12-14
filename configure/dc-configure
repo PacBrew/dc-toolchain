@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source /opt/pacbrew/dc/dc-env
+
+./configure \
+  --host=sh-elf \
+  --target=sh-elf \
+  --build=${CHOST} \
+  --prefix=${DC_PREFIX} \
+  --libdir=${DC_PREFIX_LIB} \
+  --includedir=${DC_PREFIX_INCLUDE} \
+  --disable-shared \
+  --enable-static \
+  "$@"
+

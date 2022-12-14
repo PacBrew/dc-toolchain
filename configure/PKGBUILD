@@ -1,0 +1,20 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+
+pkgname=dc-configure
+pkgver=1
+pkgrel=1
+arch=(any)
+pkgdesc="dreamcast configure wrapper"
+depends=('dc-pkg-config')
+license=("GPL")
+url='https://github.com/PacBrew'
+source=('dc-configure')
+md5sums=('SKIP')
+
+groups=('dc-toolchain')
+
+package() {
+  install -d "${pkgdir}"/opt/pacbrew/dc
+  install -m 755 dc-configure "${pkgdir}"/opt/pacbrew/dc
+}
+

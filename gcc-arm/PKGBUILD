@@ -1,0 +1,64 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+# Credits: https://github.com/KallistiOS/KallistiOS
+
+_binutilsver=2.34
+
+pkgname=dc-gcc-arm
+pkgver=8.4.0
+pkgrel=1
+pkgdesc='gcc for sega dreamcast'
+arch=('x86_64')
+url='https://mirror.cyberbits.eu/gnu/gcc/'
+license=('GNU GPL')
+options=(!strip libtool)
+source=(
+  "https://mirror.cyberbits.eu/gnu/binutils/binutils-$_binutilsver.tar.bz2"
+  "https://mirror.cyberbits.eu/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
+)
+sha256sums=(
+  '89f010078b6cf69c23c27897d686055ab89b198dddf819efb0a4f2c38a0b36e6'
+  'e30a6e52d10e1f27ed55104ad233c30bd1e99cfb5ff98ab022dc941edd1b2dd4'
+)
+  
+groups=('dc-toolchain')
+
+build() {
+  # arm binutils
+  cd $srcdir/binutils-$_binutilsver
+  mkdir -p build && cd build
+  ../configure \
+    --prefix=$srcdir/host/arm-eabi \
+    --target=arm-eabi \
+    --quiet \
+    --disable-werror
+  make $MAKEFLAGS
+  make install
+  
+  # arm-gcc
+  cd $srcdir/gcc-$pkgver
+  ./contrib/download_prerequisites
+  mkdir -p build && cd build
+  ../configure \
+    --prefix=$srcdir/host/arm-eabi \
+    --target=arm-eabi \
+    --without-headers \
+    --with-newlib \
+    --enable-languages=c \
+    --disable-libssp \
+    --disable-tls \
+    --enable-checking=release \
+    --with-arch=armv4 \
+    --with-mode=arm \
+    --disable-multilib
+  make $MAKEFLAGS
+  make install
+}
+
+package() {
+  # fix prefix
+  find ${srcdir}/host -type f -exec grep -I -q . {} \; -print | xargs sed -i "s|${srcdir}|/opt/pacbrew/dc|g"
+  
+  # "install"
+  install -d $pkgdir/opt/pacbrew/dc
+  mv ${srcdir}/host $pkgdir/opt/pacbrew/dc
+}

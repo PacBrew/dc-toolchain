@@ -1,0 +1,29 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+
+_koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
+
+pkgname=dc-environment
+pkgver=1
+pkgrel=1
+pkgdesc='dreamcast script providing common environment variables and functions.'
+arch=('any')
+url='https://github.com/PacBrew'
+license=('MIT')
+source=(
+  "dc-env"
+  "environ.sh"
+  "environ_base.sh"
+  "environ_dreamcast.sh"
+)
+md5sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+depends=('dc-gcc-sh4' 'dc-gcc-arm')
+groups=('dc-toolchain')
+
+package() {
+  install -d ${pkgdir}/opt/pacbrew/dc
+  install -m755 dc-env ${pkgdir}/opt/pacbrew/dc
+  install -m755 environ.sh ${pkgdir}/opt/pacbrew/dc
+  install -m755 environ_base.sh ${pkgdir}/opt/pacbrew/dc
+  install -m755 environ_dreamcast.sh ${pkgdir}/opt/pacbrew/dc
+}
+

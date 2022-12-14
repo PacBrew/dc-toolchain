@@ -1,0 +1,132 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+# Credits: https://github.com/KallistiOS/KallistiOS
+
+_koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
+_binutilsver=2.34
+_newlibver=3.3.0
+
+pkgname=dc-gcc-sh4
+pkgver=9.3.0
+pkgrel=1
+pkgdesc='gcc for sega dreamcast'
+arch=('x86_64')
+url='https://mirror.cyberbits.eu/gnu/gcc/'
+license=('GNU GPL')
+options=(!strip libtool)
+source=(
+  "https://mirror.cyberbits.eu/gnu/binutils/binutils-$_binutilsver.tar.bz2"
+  "https://mirror.cyberbits.eu/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
+  "ftp://sourceware.org/pub/newlib/newlib-$_newlibver.tar.gz"
+  "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/gcc-$pkgver-kos.diff"
+  "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/newlib-$_newlibver-kos.diff"
+  "https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz"
+)
+sha256sums=(
+  '89f010078b6cf69c23c27897d686055ab89b198dddf819efb0a4f2c38a0b36e6'
+  '71e197867611f6054aa1119b13a0c0abac12834765fe2d81f35ac57f84f742d1'
+  '58dd9e3eaedf519360d92d84205c3deef0b3fc286685d1c562e245914ef72c66'
+  '274b51b40d2e3dd7435d3c2791debbcbf6d437e21963675bd5588a22b47215ff'
+  'd52bf98383b4791339e0bd54e1600df707fc73f07089556c48e8bccf5301a43a'
+  '582f9c38a311346dc62a3cf2d6f2272c76a2ce560a460c240fb14251d571f419'
+)
+  
+groups=('dc-toolchain')
+
+prepare() {
+  # apply kos gcc patch
+  cd $srcdir/gcc-$pkgver
+  patch -p1 < $srcdir/gcc-$pkgver-kos.diff
+  
+  # apply kos newlib patch
+  cd $srcdir/newlib-$_newlibver
+  patch -p1 < $srcdir/newlib-$_newlibver-kos.diff
+}
+
+build() {
+  # sh4 binutils
+  cd $srcdir/binutils-$_binutilsver
+  mkdir -p build && cd build
+  ../configure \
+    --prefix=$srcdir/host/sh-elf \
+    --target=sh-elf \
+    --quiet \
+    --disable-werror
+  make $MAKEFLAGS
+  make install
+  
+  # sh4-gcc-pass1 (temp gcc for newlib build)
+  cd $srcdir/gcc-$pkgver
+  ./contrib/download_prerequisites
+  mkdir -p build && cd build
+  ../configure \
+    --prefix=$srcdir/host/sh-elf \
+    --target=sh-elf \
+    --without-headers \
+    --with-newlib \
+    --enable-languages=c \
+    --disable-libssp \
+    --disable-tls \
+    --enable-checking=release \
+    --with-multilib-list=m4-single-only \
+    --with-endian=little \
+    --with-cpu=m4-single-only
+  make $MAKEFLAGS
+  make install
+
+  # sh4-newlib
+  export PATH=$PATH:$srcdir/host/sh-elf/bin
+  cd $srcdir/newlib-$_newlibver
+  mkdir -p build && cd build
+  ../configure \
+    --prefix=$srcdir/host/sh-elf \
+    --target=sh-elf \
+    --with-multilib-lle \
+    --with-cpu=m4-single-only \
+    CC_FOR_TARGET=sh-elf-gcc
+  make --quiet $MAKEFLAGS
+  make install
+  
+  # sh4-newlib-fixup
+  ln -nsf $srcdir/KallistiOS-$_koscommit/include/pthread.h $srcdir/host/sh-elf/sh-elf/include
+	ln -nsf $srcdir/KallistiOS-$_koscommit/include/sys/_pthread.h $srcdir/host/sh-elf/sh-elf/include/sys
+	ln -nsf $srcdir/KallistiOS-$_koscommit/include/sys/sched.h $srcdir/host/sh-elf/sh-elf/include/sys
+	ln -nsf $srcdir/KallistiOS-$_koscommit/include/kos $srcdir/host/sh-elf/sh-elf/include
+	ln -nsf $srcdir/KallistiOS-$_koscommit/kernel/arch/dreamcast/include/arch $srcdir/host/sh-elf/sh-elf/include
+	ln -nsf $srcdir/KallistiOS-$_koscommit/kernel/arch/dreamcast/include/dc $srcdir/host/sh-elf/sh-elf/include
+  
+  # sh4-gcc-pass2
+  cd $srcdir/gcc-$pkgver
+  rm -rf build && mkdir build && cd build
+  ../configure \
+    --prefix=$srcdir/host/sh-elf \
+    --target=sh-elf \
+    --without-headers \
+    --with-newlib \
+    --disable-libssp \
+    --disable-tls \
+    --enable-threads=kos \
+    --enable-languages=c,c++ \
+    --enable-checking=release \
+    --with-multilib-list=m4-single-only \
+    --with-endian=little \
+    --with-cpu=m4-single-only
+  make $MAKEFLAGS
+  make install
+  
+  # sh4-newlib-fixup (cleanup)
+  rm -f $srcdir/host/sh-elf/sh-elf/include/pthread.h
+  rm -f $srcdir/host/sh-elf/sh-elf/include/sys/_pthread.h
+  rm -f $srcdir/host/sh-elf/sh-elf/include/sys/sched.h
+  rm -f $srcdir/host/sh-elf/sh-elf/include/kos
+  rm -f $srcdir/host/sh-elf/sh-elf/include/arch
+  rm -f $srcdir/host/sh-elf/sh-elf/include/dc
+}
+
+package() {
+  # fix prefix
+  find ${srcdir}/host -type f -exec grep -I -q . {} \; -print | xargs sed -i "s|${srcdir}|/opt/pacbrew/dc|g"
+  
+  # "install"
+  install -d $pkgdir/opt/pacbrew/dc
+  mv ${srcdir}/host $pkgdir/opt/pacbrew/dc
+}

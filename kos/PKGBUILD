@@ -1,0 +1,42 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+
+_koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
+
+pkgname=dc-kos
+pkgver=1
+pkgrel=1
+pkgdesc='KOS is an unofficial development environment for the SEGA Dreamcast game console.'
+arch=('any')
+url='https://github.com/KallistiOS/KallistiOS'
+license=('MIT')
+options=(!strip libtool)
+source=("https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz")
+sha256sums=('582f9c38a311346dc62a3cf2d6f2272c76a2ce560a460c240fb14251d571f419')
+depends=('dc-environment')
+groups=('dc-toolchain')
+
+build() {
+  cd $srcdir/KallistiOS-$_koscommit
+
+  # use source dir for building
+  export KOS_BASE="$srcdir/KallistiOS-$_koscommit"
+  
+  # setup PacBrew toolchain
+  source /opt/pacbrew/dc/dc-env
+  
+  # reset PacBrew defines for kos build
+  AS="" CC="" CXX="" CPP="" \
+    LD="" AR="" NM="" RANLIB="" STRIP="" \
+    CFLAGS="" CPPFLAGS="" CXXFLAGS="" LDFLAGS="" \
+    make $MAKEFLAGS
+}
+
+package() {
+  # cleanup
+  find $srcdir/KallistiOS-$_koscommit -type f -name "*.o" -exec rm -f {} \;
+  
+  # install
+  install -d $pkgdir/opt/pacbrew/dc/target/sh-elf
+  mv $srcdir/KallistiOS-$_koscommit $pkgdir/opt/pacbrew/dc/target/sh-elf/kos
+}
+
