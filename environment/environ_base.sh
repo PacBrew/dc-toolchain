@@ -41,5 +41,6 @@ export KOS_CPPFLAGS="${KOS_CPPFLAGS} ${KOS_INC_PATHS_CPP} -fno-operator-names -f
 # with kos-cc or kos-c++.
 export KOS_CSTD="-std=c99"
 export KOS_CPPSTD="-std=gnu++98"
-export KOS_LDFLAGS="${KOS_LDFLAGS} ${KOS_LD_SCRIPT} -nodefaultlibs ${KOS_LIB_PATHS}"
+#export KOS_LDFLAGS="${KOS_LDFLAGS} ${KOS_LD_SCRIPT} -nodefaultlibs ${KOS_LIB_PATHS}"
+export KOS_LDFLAGS="${KOS_LDFLAGS} ${KOS_LD_SCRIPT} ${KOS_LIB_PATHS}"
 

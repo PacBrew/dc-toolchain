@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+source /opt/pacbrew/dc/dc-env
+
+exec cmake -DCMAKE_TOOLCHAIN_FILE=${DC_PREFIX_LIB}/cmake/dc-toolchain.cmake "$@"
+

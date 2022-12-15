@@ -1,0 +1,71 @@
+cmake_minimum_required(VERSION 3.6.0)
+
+if (NOT DEFINED ENV{DC_HOME})
+  set(DC_HOME "/opt/pacbrew/dc")
+  set(ENV{DC_HOME} ${DC_HOME})
+else ()
+  set(DC_HOME $ENV{DC_HOME})
+endif ()
+
+if (NOT DEFINED ENV{KOS_BASE})
+  set(KOS_BASE "/opt/pacbrew/dc/target/sh-elf/kos")
+  set(ENV{KOS_BASE} ${KOS_BASE})
+else ()
+  set(KOS_BASE $ENV{KOS_BASE})
+endif ()
+
+set(DREAMCAST TRUE CACHE BOOL "")
+set(UNIX TRUE CACHE BOOL "")
+set(DC_SYSROOT "${DC_HOME}/target/sh-elf")
+
+set(TARGET "sh-elf")
+set(CMAKE_SYSTEM_NAME "Generic")
+set(CMAKE_SYSTEM_PROCESSOR "sh")
+set(CMAKE_SYSTEM_VERSION 12)
+set(CMAKE_CROSSCOMPILING 1)
+set(CMAKE_LIBRARY_ARCHITECTURE sh CACHE INTERNAL "abi")
+set(CMAKE_SYSROOT ${DC_SYSROOT})
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# toolchain setup
+set(DC_HOST "${DC_HOME}/host/${TARGET}")
+set(DC_CROSS_PREFIX "${DC_HOST}/bin")
+set(DC_TOOLS_COMPILER_PREFIX "${DC_CROSS_PREFIX}/${TARGET}-")
+
+# set from "dc-cmake" (dc-env)
+#[[
+set(KOS_ARCH "dreamcast" CACHE STRING "" FORCE)
+set(KOS_SUBARCH "pristine" CACHE STRING "" FORCE)
+set(KOS_INC_PATHS "-I${KOS_BASE}/include -I${KOS_BASE}/kernel/arch/dreamcast/include -I${KOS_BASE}/addons/include -I${KOS_BASE} -I${DC_SYSROOT}/usr/include")
+set(KOS_LIB_PATHS "-L${KOS_BASE}/lib/${KOS_ARCH} -L${KOS_BASE}/addons/lib/${KOS_ARCH} -L${DC_SYSROOT}/usr/lib")
+set(KOS_LIBS "-Wl,--start-group -lc -lgcc -Wl,--end-group")
+set(KOS_CFLAGS "-D__DREAMCAST__ -ml -m4-single-only -ffunction-sections -fdata-sections -D_arch_dreamcast -D_arch_sub_${KOS_SUBARCH} -Wall -g -fno-builtin")
+set(CMAKE_OBJCOPY ${DC_TOOLS_COMPILER_PREFIX}objcopy CACHE FILEPATH "")
+set(CMAKE_C_COMPILER ${DC_TOOLS_COMPILER_PREFIX}gcc CACHE FILEPATH "")
+set(CMAKE_CXX_COMPILER ${DC_TOOLS_COMPILER_PREFIX}g++ CACHE FILEPATH "")
+set(CMAKE_AR ${DC_TOOLS_COMPILER_PREFIX}ar CACHE FILEPATH "")
+set(CMAKE_ASM_COMPILER ${DC_TOOLS_COMPILER_PREFIX}gcc CACHE FILEPATH "")
+set(CMAKE_LINKER ${DC_TOOLS_COMPILER_PREFIX}ld CACHE FILEPATH "")
+set(CMAKE_C_FLAGS "${KOS_CFLAGS} ${KOS_INC_PATHS}" CACHE STRING "C flags" FORCE)
+set(CMAKE_CXX_FLAGS "${KOS_CFLAGS} ${KOS_INC_PATHS} -fno-operator-names -fno-rtti -fno-exceptions" CACHE STRING "C++ flags" FORCE)
+set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "CMAKE_C_FLAGS_RELEASE" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "CMAKE_CXX_FLAGS_RELEASE" FORCE)
+set(CMAKE_C_LINK_FLAGS "${KOS_LIB_PATHS} ${KOS_LIBS}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_LINK_FLAGS "${KOS_LIB_PATHS} ${KOS_LIBS}" CACHE STRING "" FORCE)
+]]
+
+set_property(DIRECTORY PROPERTY TARGET_SUPPORTS_SHARED_LIBS FALSE)
+
+set(CMAKE_FIND_ROOT_PATH ${DC_SYSROOT}/usr)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
+
+set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
+
+find_program(PKG_CONFIG_EXECUTABLE NAMES ${TARGET}-pkg-config HINTS "${DC_SYSROOT}/usr/bin")
+if (NOT PKG_CONFIG_EXECUTABLE)
+  message(WARNING "Could not find ${TARGET}-pkg-config: try installing dc-pkg-config")
+endif ()

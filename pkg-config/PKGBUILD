@@ -13,7 +13,8 @@ depends=('dc-environment')
 groups=('dc-toolchain')
 
 package() {
-  install -d ${pkgdir}/opt/pacbrew/dc/target/sh-elf/usr/bin
-  install -m755 sh-elf-pkg-config ${pkgdir}/opt/pacbrew/dc/target/sh-elf/usr/bin
+  source /opt/pacbrew/dc/dc-env
+  install -d ${pkgdir}{DC_PREFIX_BIN}
+  install -m755 sh-elf-pkg-config ${pkgdir}{DC_PREFIX_BIN}
 }
 

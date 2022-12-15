@@ -1,0 +1,23 @@
+# Maintainer: cpasjuste <cpasjuste@gmail.com>
+
+pkgname=dc-cmake
+pkgver=1
+pkgrel=1
+arch=(any)
+pkgdesc="dreamcast cmake wrapper"
+depends=('dc-pkg-config')
+license=("GPL")
+url='https://github.com/PacBrew'
+source=("dc-cmake" "dc-toolchain.cmake")
+md5sums=('SKIP' 'SKIP')
+groups=('dc-toolchain')
+
+package() {
+  source /opt/pacbrew/dc/dc-env
+  
+  install -d ${pkgdir}${DC_PREFIX_BIN}
+  install -d ${pkgdir}${DC_PREFIX_LIB}/cmake
+  install -m755 dc-cmake ${pkgdir}${DC_PREFIX_BIN}/dc-cmake
+  install -m755 dc-toolchain.cmake ${pkgdir}${DC_PREFIX_LIB}/cmake/dc-toolchain.cmake
+}
+
