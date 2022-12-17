@@ -18,9 +18,10 @@ export AR="${KOS_AR}"
 export NM="${DC_HOST}/bin/sh-elf-nm"
 export RANLIB="${KOS_RANLIB}"
 export STRIP="${KOS_STRIP}"
-export CFLAGS="-I${DC_SYSROOT}/usr/include ${KOS_CFLAGS} -D__DREAMCAST__"
-export CPPFLAGS="${CFLAGS} ${KOS_CPPFLAGS}"
-export CXXFLAGS="${CFLAGS} ${KOS_CPPFLAGS}"
+export CFLAGS="${CFLAGS} -I${DC_SYSROOT}/usr/include ${KOS_CFLAGS} -D__unix__ -D__DREAMCAST__"
+#export CPPFLAGS="${CFLAGS} ${KOS_CPPFLAGS}"
+export CPPFLAGS="${CFLAGS}"
+export CXXFLAGS="${CXXFLAGS} ${CFLAGS} ${KOS_CPPFLAGS}"
 export LDFLAGS="-L${DC_SYSROOT}/usr/lib ${KOS_LDFLAGS} ${KOS_LIBS}"
 
 # pkg config setup

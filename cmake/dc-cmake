@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-source /opt/pacbrew/dc/dc-env
+# clear LDFLAGS to prevent duplicate ld script linkage (shlelf.xc)
+export LDFLAGS=""
 
-exec cmake -DCMAKE_TOOLCHAIN_FILE=${DC_PREFIX_LIB}/cmake/dc-toolchain.cmake "$@"
+exec cmake -DCMAKE_TOOLCHAIN_FILE=/opt/pacbrew/dc/target/sh-elf/usr/lib/cmake/dc-toolchain.cmake "$@"
 
