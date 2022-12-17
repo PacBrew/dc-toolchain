@@ -69,3 +69,10 @@ find_program(PKG_CONFIG_EXECUTABLE NAMES ${TARGET}-pkg-config HINTS "${DC_SYSROO
 if (NOT PKG_CONFIG_EXECUTABLE)
   message(WARNING "Could not find ${TARGET}-pkg-config: try installing dc-pkg-config")
 endif ()
+
+# needed by kos "bin2o" utility
+set(KOS_ARCH "dreamcast")
+set(KOS_AS ${CMAKE_ASM_COMPILER})
+set(KOS_AFLAGS "-little")
+set(KOS_LD ${CMAKE_LINKER})
+set(KOS_OBJCOPY ${CMAKE_OBJCOPY})
