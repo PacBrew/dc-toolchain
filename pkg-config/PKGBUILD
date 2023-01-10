@@ -14,7 +14,7 @@ groups=('dc-toolchain')
 
 package() {
   source /opt/pacbrew/dc/dc-env
-  install -d ${pkgdir}{DC_PREFIX_BIN}
-  install -m755 sh-elf-pkg-config ${pkgdir}{DC_PREFIX_BIN}
+  install -d ${pkgdir}${DC_PREFIX_BIN}
+  install -m755 sh-elf-pkg-config ${pkgdir}${DC_PREFIX_BIN}
 }
 
