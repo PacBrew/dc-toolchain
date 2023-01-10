@@ -22,7 +22,7 @@ set(DC_SYSROOT "${DC_HOME}/target/sh-elf")
 set(TARGET "sh-elf")
 set(CMAKE_SYSTEM_NAME "Generic")
 set(CMAKE_SYSTEM_PROCESSOR "sh")
-SET(CMAKE_SYSTEM_VERSION 12)
+set(CMAKE_SYSTEM_VERSION 12)
 set(CMAKE_CROSSCOMPILING TRUE)
 set(CMAKE_SYSROOT ${DC_SYSROOT})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -67,7 +67,7 @@ set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
 
 find_program(PKG_CONFIG_EXECUTABLE NAMES ${TARGET}-pkg-config HINTS "${DC_SYSROOT}/usr/bin")
 if (NOT PKG_CONFIG_EXECUTABLE)
-  message(WARNING "Could not find ${TARGET}-pkg-config: try installing dc-pkg-config")
+  message(WARNING "Could not find ${TARGET}-pkg-config: try installing dc-pkg-config package")
 endif ()
 
 # needed by kos "bin2o" utility
