@@ -5,10 +5,10 @@ _koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
 _binutilsver=2.34
 _newlibver=3.3.0
 
-pkgname=dc-gcc-sh4
+pkgname=dc-gcc-sh4-ds
 pkgver=9.3.0
-pkgrel=2
-pkgdesc='gcc (sh4) for the sega dreamcast'
+pkgrel=1
+pkgdesc='gcc (sh4) for the sega dreamcast (with DreamShell patches)'
 arch=('any')
 url='https://mirror.cyberbits.eu/gnu/gcc/'
 license=('GNU GPL')
@@ -20,6 +20,7 @@ source=(
   "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/gcc-$pkgver-kos.diff"
   "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/newlib-$_newlibver-kos.diff"
   "https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz"
+  "gcc-9.3.0-kos-swat.diff"
 )
 sha256sums=(
   '89f010078b6cf69c23c27897d686055ab89b198dddf819efb0a4f2c38a0b36e6'
@@ -28,16 +29,22 @@ sha256sums=(
   '274b51b40d2e3dd7435d3c2791debbcbf6d437e21963675bd5588a22b47215ff'
   'd52bf98383b4791339e0bd54e1600df707fc73f07089556c48e8bccf5301a43a'
   '582f9c38a311346dc62a3cf2d6f2272c76a2ce560a460c240fb14251d571f419'
+  'SKIP'
 )
 provides=('dc-gcc-sh4')
-conflicts=('dc-gcc-sh4-ds')
-groups=('dc-toolchain')
+conflicts=('dc-gcc-sh4')
 
 prepare() {
-  # apply kos gcc patch
+  # apply swat gcc patch to kos gcc patch (need to remove simlink)
+  cd $srcdir
+  rm gcc-$pkgver-kos.diff
+  cp ../gcc-$pkgver-kos.diff gcc-$pkgver-kos.diff
+  patch < gcc-$pkgver-kos-swat.diff gcc-$pkgver-kos.diff
+
+  # apply kos/swat gcc patch
   cd $srcdir/gcc-$pkgver
   patch -p1 < $srcdir/gcc-$pkgver-kos.diff
-  
+
   # apply kos newlib patch
   cd $srcdir/newlib-$_newlibver
   patch -p1 < $srcdir/newlib-$_newlibver-kos.diff
