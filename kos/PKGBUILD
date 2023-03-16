@@ -1,21 +1,31 @@
 # Maintainer: cpasjuste <cpasjuste@gmail.com>
 
-_koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
+_koscommit=c84b74b52c9240cd02fe52d5f92d4d256d85ce69
+_dscommit=831f9875f8fca5f86735f675b73bc4294fde286c
 
 pkgname=dc-kos
-pkgver=1
-pkgrel=2
-pkgdesc='KOS is an unofficial development environment for the SEGA Dreamcast game console.'
+pkgver=2
+pkgrel=1
+pkgdesc='KOS is an unofficial development environment for the SEGA Dreamcast game console (with DreamShell patches).'
 arch=('any')
 url='https://github.com/KallistiOS/KallistiOS'
 license=('MIT')
 options=(!strip libtool)
-source=("https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz")
-sha256sums=('582f9c38a311346dc62a3cf2d6f2272c76a2ce560a460c240fb14251d571f419')
+source=(
+  "https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz"
+  "https://github.com/DC-SWAT/DreamShell/raw/$_dscommit/sdk/toolchain/patches/kos.diff"
+)
+sha256sums=(
+  '802e95acfad50e7c6419814248dbe2a718b784c5182d43b426d545f08f739dfc'
+  '4d3ae1f8f03ca74a473d92ea7eda14f43cdcd0b084ccfdcc990e84885b455dd8'
+)
 depends=('dc-environment')
-provides=('dc-kos')
-conflicts=('dc-kos-ds')
-groups=('dc-toolchain')
+
+prepare() {
+  # apply ds patch
+  cd $srcdir/KallistiOS-$_koscommit
+  patch -p1 < $srcdir/kos.diff
+}
 
 build() {
   cd $srcdir/KallistiOS-$_koscommit

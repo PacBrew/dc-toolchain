@@ -1,13 +1,13 @@
 # Maintainer: cpasjuste <cpasjuste@gmail.com>
 # Credits: https://github.com/KallistiOS/KallistiOS
 
-_koscommit=f07a8b98ec991373c614af0c7b45c3ca5a4eb8f3
-_binutilsver=2.34
-_newlibver=3.3.0
+_koscommit=c84b74b52c9240cd02fe52d5f92d4d256d85ce69
+_binutilsver=2.40
+_newlibver=4.3.0.20230120
 
 pkgname=dc-gcc-sh4
-pkgver=9.3.0
-pkgrel=2
+pkgver=12.2.0
+pkgrel=1
 pkgdesc='gcc (sh4) for the sega dreamcast'
 arch=('any')
 url='https://mirror.cyberbits.eu/gnu/gcc/'
@@ -16,21 +16,19 @@ options=(!strip libtool)
 source=(
   "https://mirror.cyberbits.eu/gnu/binutils/binutils-$_binutilsver.tar.bz2"
   "https://mirror.cyberbits.eu/gnu/gcc/gcc-$pkgver/gcc-$pkgver.tar.xz"
-  "ftp://sourceware.org/pub/newlib/newlib-$_newlibver.tar.gz"
+  "https://sourceware.org/ftp/newlib/newlib-$_newlibver.tar.gz"
   "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/gcc-$pkgver-kos.diff"
   "https://github.com/KallistiOS/KallistiOS/raw/$_koscommit/utils/dc-chain/patches/newlib-$_newlibver-kos.diff"
   "https://github.com/KallistiOS/KallistiOS/archive/$_koscommit.tar.gz"
 )
 sha256sums=(
-  '89f010078b6cf69c23c27897d686055ab89b198dddf819efb0a4f2c38a0b36e6'
-  '71e197867611f6054aa1119b13a0c0abac12834765fe2d81f35ac57f84f742d1'
-  '58dd9e3eaedf519360d92d84205c3deef0b3fc286685d1c562e245914ef72c66'
-  '274b51b40d2e3dd7435d3c2791debbcbf6d437e21963675bd5588a22b47215ff'
-  'd52bf98383b4791339e0bd54e1600df707fc73f07089556c48e8bccf5301a43a'
-  '582f9c38a311346dc62a3cf2d6f2272c76a2ce560a460c240fb14251d571f419'
+  'f8298eb153a4b37d112e945aa5cb2850040bcf26a3ea65b5a715c83afe05e48a'
+  'e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff'
+  '83a62a99af59e38eb9b0c58ed092ee24d700fff43a22c03e433955113ef35150'
+  'e49ab55961741751ac8f4b0e766414efe71c24ab3c84971b8fd7532f3d98c655'
+  'd0c3ccd8cd08f2f29e0fe833ff00016a2a0107e8ada312c843501f2fdb7d05db'
+  '802e95acfad50e7c6419814248dbe2a718b784c5182d43b426d545f08f739dfc'
 )
-provides=('dc-gcc-sh4')
-conflicts=('dc-gcc-sh4-ds')
 groups=('dc-toolchain')
 
 prepare() {
